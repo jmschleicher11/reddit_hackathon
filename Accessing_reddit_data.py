@@ -7,6 +7,7 @@ import re
 
 #direct = '/Users/Floreana/Documents/Jobs/Insight/hackathon/'
 #sys.path.append(direct) 
+
 from reddit_user_info import main
 
 client_id, client_secret, user_agent = main()

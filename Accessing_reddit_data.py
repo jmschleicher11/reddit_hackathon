@@ -24,7 +24,6 @@ for submission in subreddit.new(limit=20):
 pattern = r'[/ ?]'
 found = []
 for i in original_post_urls:
-    #print("URL: ", depthhub_submission.url)
     tokens = re.split(pattern,i)
     comment_ids = []
     comment_objects = reddit.submission(url=i).comments.list()

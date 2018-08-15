@@ -20,6 +20,7 @@ for row, words in enumerate(reddit_df['Top_N_words']):
     arguments={'keywords':" ".join(words), 
                'limit':n_images, 
                'format':'jpg',
-               'prefix':str(row),
-               'image_directory':os.path.join('images')}
+               'prefix':str(row) + " ".join(words),
+               'image_directory':os.path.join('images'), 
+               '--safe_search':''}
     absolute_image_paths = response.download(arguments)

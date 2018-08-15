@@ -61,11 +61,16 @@ def most_common(df, N=5):
         df['top_n_lemma'].iloc[row] = [i[0] for i in top5_lemma]
         
         stem_vectorizer = CountVectorizer()
+        lemmed_article = ' '.join(wd for wd in lemmatized_tokens)
         stemmed_article = ' '.join(wd for wd in stemmed_tokens)
         # performe a count-based vectorization of the document
+        article_lemma_vect = lemma_vectorizer.fit_transform([lemmed_article])
         article_stem_vect = stem_vectorizer.fit_transform([stemmed_article])
+        lemma_freqs = [(word, article_lemma_vect.getcol(idx).sum()) 
+                        for word, idx in lemma_vectorizer.vocabulary_.items()]
         stem_freqs = [(word, article_stem_vect.getcol(idx).sum())
                         for word, idx in stem_vectorizer.vocabulary_.items()]
+        
 
         top5_stem = sorted(stem_freqs, key = lambda x: -x[1])[0:N]
         df['top_n_stem'].iloc[row] = [i[0] for i in top5_stem]

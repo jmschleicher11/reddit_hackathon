@@ -22,7 +22,7 @@ reddit_file = 'sample_comments_df_1000.pkl'
 reddit_df = pd.read_pickle(reddit_file)
 
 
-def most_common(df, N=5, stem_or_lemma = 'stem'):
+def most_common(df, N=5):
     """
     Simple preprocessing pipeline which uses RegExp, sets basic token requirements,
     and removes default stop words.
@@ -35,10 +35,11 @@ def most_common(df, N=5, stem_or_lemma = 'stem'):
     stop_words.append('would')
     lemmatizer = WordNetLemmatizer()
     stemmer = SnowballStemmer('english')
+    df['top_n_lemma'] = ''
+    df['top_n_stem'] = ''
 
     # process articles
-    article_list = []
-    top_N = []
+
     for row, post in enumerate(df['text']):
         stemmed_tokens = []
         lemmatized_tokens = []
@@ -52,29 +53,25 @@ def most_common(df, N=5, stem_or_lemma = 'stem'):
                         #cleaned_tokens.append(lemmatized_tokens)
         # Extract top N words
         lemma_vectorizer = CountVectorizer()
-        stem_vectorizer = CountVectorizer()
         lemmed_article = ' '.join(wd for wd in lemmatized_tokens)
-        stemmed_article = ' '.join(wd for wd in stemmed_tokens)
-        # performe a count-based vectorization of the document
         article_lemma_vect = lemma_vectorizer.fit_transform([lemmed_article])
-        article_stem_vect = stem_vectorizer.fit_transform([stemmed_article])
         lemma_freqs = [(word, article_lemma_vect.getcol(idx).sum()) 
                         for word, idx in lemma_vectorizer.vocabulary_.items()]
+        top5_lemma = sorted(lemma_freqs, key = lambda x: -x[1])[0:N]
+        df['top_n_lemma'].iloc[row] = [i[0] for i in top5_lemma]
+        
+        stem_vectorizer = CountVectorizer()
+        stemmed_article = ' '.join(wd for wd in stemmed_tokens)
+        # performe a count-based vectorization of the document
+        article_stem_vect = stem_vectorizer.fit_transform([stemmed_article])
         stem_freqs = [(word, article_stem_vect.getcol(idx).sum())
                         for word, idx in stem_vectorizer.vocabulary_.items()]
-        #df['Top_N'].iloc[row] = sorted (freqs, key = lambda x: -x[1])[0:N]
-        top5_stem = sorted (stem_freqs, key = lambda x: -x[1])[0:N]
-        top5_lemma = sorted (lemma_freqs, key = lambda x: -x[1])[0:N]
-        if stem_or_lemma == 'stem':
-#            df['Top_N'].iloc[row] = top5_stem
-            top_N.append(top5_stem)
-        else:
-#            df['Top_N'].iloc[row] = top5_lemma
-            top_N.append(top5_lemma)
-            
-    strings, counts = list(zip(*[list(zip(*x)) for x in top_N]))
-    df['Top_N_words'] = strings
-    df['Top_N_counts'] = counts
 
-    return df
+        top5_stem = sorted(stem_freqs, key = lambda x: -x[1])[0:N]
+        df['top_n_stem'].iloc[row] = [i[0] for i in top5_stem]
+        df['stem_counts'].iloc[row] = [i[0] for i in top5_stem]
+                    
+        return df
+        
+
 

@@ -22,5 +22,6 @@ for row, words in enumerate(reddit_df['Top_N_words']):
                'format':'jpg',
                'prefix':str(row) + " ".join(words),
                'image_directory':os.path.join('images'), 
-               '--safe_search':''}
+               'safe_search':True, 
+               'print_urls':True}
     absolute_image_paths = response.download(arguments)

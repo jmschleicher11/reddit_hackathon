@@ -16,9 +16,10 @@ from nltk.stem.wordnet import WordNetLemmatizer
 
 
 
-file_dir = '/home/driebel/Dropbox/Insight/hackathon/reddit_hackathon/'
+#file_dir = '/home/driebel/Dropbox/Insight/hackathon/reddit_hackathon/'
 reddit_file = 'sample_comments_df_1000.pkl'
-reddit_df = pd.read_pickle(file_dir+reddit_file)
+#reddit_df = pd.read_pickle(file_dir+reddit_file)
+reddit_df = pd.read_pickle(reddit_file)
 
 
 def most_common(df, N=5, stem_or_lemma = 'stem'):
@@ -37,6 +38,7 @@ def most_common(df, N=5, stem_or_lemma = 'stem'):
 
     # process articles
     article_list = []
+    top_N = []
     for row, post in enumerate(df['text']):
         stemmed_tokens = []
         lemmatized_tokens = []
@@ -64,9 +66,15 @@ def most_common(df, N=5, stem_or_lemma = 'stem'):
         top5_stem = sorted (stem_freqs, key = lambda x: -x[1])[0:N]
         top5_lemma = sorted (lemma_freqs, key = lambda x: -x[1])[0:N]
         if stem_or_lemma == 'stem':
-            df['Top_N'].iloc[row] = top5_stem
+#            df['Top_N'].iloc[row] = top5_stem
+            top_N.append(top5_stem)
         else:
-            df['Top_N'].iloc[row] = top5_lemma
+#            df['Top_N'].iloc[row] = top5_lemma
+            top_N.append(top5_lemma)
             
-        return df
+    strings, counts = list(zip(*[list(zip(*x)) for x in top_N]))
+    df['Top_N_words'] = strings
+    df['Top_N_counts'] = counts
+
+    return df
 

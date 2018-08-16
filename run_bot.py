@@ -5,7 +5,8 @@ import pandas as pd
 
 import generate_text_df_pkl as gtd
 import most_common as mc
-
+import images_top_n_words as itw
+import post_bot as pb
 
 # Want to stream, as items created,
 #  add to file containing ids
@@ -40,8 +41,19 @@ for submission in gtd._subreddit.stream.submissions():
             #######################
             ######Do stuff here####
             #######################
-            mc.most_common( out_df )
             
+            # Do the processing and get the lemmatized words
+            lemma_w, stem_w, lemma_n, stem_n = mc.most_common( out_df['text'].values[0] )
+            
+            # Get the image link using gogle images download
+            image_link = itw.get_image_link( lemma_w )
+            
+            # Run the post bot
+            pb.post_bot(
+                        post_link=out_df['url'].values[0], 
+                        image_link=image_link, 
+                        title='MORE TESTS'
+                       )
             
             #######################
             #######################

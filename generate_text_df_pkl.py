@@ -146,6 +146,30 @@ def update_post_file( filename, n_submissions=5 ):
     out_df = recent_df[ new_posts ].append( old_df, ignore_index=True )
     out_df.to_pickle( filename )
     
+    
+# Get the top n_sub posts, check if in dataframe,
+#  and update the file if there is anything new
+def update_post_pickle_with_df( inp_df, filename='post_data.pkl' ):
+    
+    # Read what is in the old file
+    old_df = pd.read_pickle( filename )
+    
+    # Determine if post ids are already present
+    new_posts = inp_df['comment_id'].apply( 
+        lambda x: x not in old_df['comment_id'].values 
+    )
+    
+    # Get number of new posts, if none abort
+    n_new = new_posts.sum()
+    if ( n_new == 0 ):
+        return
+
+    # If new posts, add and write new file
+    
+###########UNCOMMENT WHEN ACTUALLY IMPLEMENTING, NOT TESTING
+    #out_df = inp_df[ new_posts ].append( old_df, ignore_index=True )
+    #out_df.to_pickle( filename )
+    
 # Gets only the most recent n_submission files
 def get_recent( n_submissions=5 ):
     

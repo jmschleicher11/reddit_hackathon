@@ -104,15 +104,18 @@ def gen_df( sub_dict, text_dict, url_dict ):
 
     key_list = list( sub_dict.keys() )
 
-    for i in range( 0, len(sub_dict.keys()) ): 
-        s_key = key_list[i]
-        out_df = out_df.append( 
-            {
-                'comment_id':s_key,
-                'url':url_dict[s_key],
-                'subreddit':sub_dict[s_key],
-                'text':text_dict[s_key],
-            }, ignore_index=True )
+    try:
+        for i in range( 0, len(sub_dict.keys()) ): 
+            s_key = key_list[i]
+            out_df = out_df.append( 
+                {
+                    'comment_id':s_key,
+                    'url':url_dict[s_key],
+                    'subreddit':sub_dict[s_key],
+                    'text':text_dict[s_key],
+                }, ignore_index=True )
+    except KeyError:
+        pass
     return out_df
     
 # Turn the dicts into a pd dataframe

@@ -52,7 +52,7 @@ for submission in gtd._subreddit.stream.submissions():
             pb.post_bot(
                         post_link=out_df['url'].values[0], 
                         image_link=image_link, 
-                        title='MORE TESTS'
+                        title=submission.title,
                        )
             
             #######################

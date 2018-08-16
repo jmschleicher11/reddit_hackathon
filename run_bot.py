@@ -80,7 +80,7 @@ for submission in gtd._subreddit.stream.submissions():
             print('Done!\n\n')
         else:
             print('No text found, aborting\n\n')
-        time.sleep(10)
+        time.sleep(60)
     else:
         print('Comment id %s already present, ignoring\n\n'%comment_id)
         

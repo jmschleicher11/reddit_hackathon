@@ -20,7 +20,7 @@ df = pd.read_pickle(reddit_file)
 df = df[df['text'] != '[removed]']
 df = df[df['text'] != '[deleted]']
 
-def most_common(df, N=5):
+def most_common(post, N=5):
     """
     Simple preprocessing pipeline which uses RegExp, sets basic token requirements,
     and removes default stop words.
@@ -38,46 +38,51 @@ def most_common(df, N=5):
             
     lemmatizer = WordNetLemmatizer()
     stemmer = SnowballStemmer('english')
-    df['top_n_lemma'] = ''
-    df['top_n_stem'] = ''
-    df['lemma_counts'] = ''
-    df['stem_counts'] = ''
+    #df['top_n_lemma'] = ''
+    #df['top_n_stem'] = ''
+    #df['lemma_counts'] = ''
+    #df['stem_counts'] = ''
     # process articles
 
-    for row, post in enumerate(df['text']):
-        stemmed_tokens = []
-        lemmatized_tokens = []
-        tokens = tokenizer.tokenize(post.lower())
-        for token in tokens:
-            if token not in stop_words:
-                if len(token) > 0 and len(token) < 20: # removes non words
-                    if not token[0].isdigit() and not token[-1].isdigit(): # removes numbers
-                        lemmatized_tokens.append(lemmatizer.lemmatize(token))
-                        stemmed_tokens.append(stemmer.stem(token))
-                        #cleaned_tokens.append(lemmatized_tokens)
-        
-        # Extract top N words Using Lemma
-        lemma_vectorizer = CountVectorizer()
-        lemmed_article = ' '.join(wd for wd in lemmatized_tokens)
-        article_lemma_vect = lemma_vectorizer.fit_transform([lemmed_article])
-        lemma_freqs = [(word, article_lemma_vect.getcol(idx).sum()) 
-                        for word, idx in lemma_vectorizer.vocabulary_.items()]
-        top5_lemma = sorted(lemma_freqs, key = lambda x: -x[1])[0:N]
-        df['top_n_lemma'].iloc[row] = [i[0] for i in top5_lemma]
-        df['lemma_counts'].iloc[row] = [i[1] for i in top5_lemma]
-        
-        # Using Stem
-        stem_vectorizer = CountVectorizer()
-        stemmed_article = ' '.join(wd for wd in stemmed_tokens)
-        # performe a count-based vectorization of the document
-        article_stem_vect = stem_vectorizer.fit_transform([stemmed_article])
-        stem_freqs = [(word, article_stem_vect.getcol(idx).sum())
-                        for word, idx in stem_vectorizer.vocabulary_.items()]
-        top5_stem = sorted(stem_freqs, key = lambda x: -x[1])[0:N]
-        df['top_n_stem'].iloc[row] = [i[0] for i in top5_stem]
-        df['stem_counts'].iloc[row] = [i[1] for i in top5_stem]
-                    
-        return df
+    stemmed_tokens = []
+    lemmatized_tokens = []
+    tokens = tokenizer.tokenize(post.lower())
+    for token in tokens:
+        if token not in stop_words:
+            if len(token) > 0 and len(token) < 20: # removes non words
+                if not token[0].isdigit() and not token[-1].isdigit(): # removes numbers
+                    lemmatized_tokens.append(lemmatizer.lemmatize(token))
+                    stemmed_tokens.append(stemmer.stem(token))
+                    #cleaned_tokens.append(lemmatized_tokens)
+    
+    # Extract top N words Using Lemma
+    lemma_vectorizer = CountVectorizer()
+    lemmed_article = ' '.join(wd for wd in lemmatized_tokens)
+    article_lemma_vect = lemma_vectorizer.fit_transform([lemmed_article])
+    lemma_freqs = [(word, article_lemma_vect.getcol(idx).sum()) 
+                    for word, idx in lemma_vectorizer.vocabulary_.items()]
+    top5_lemma = sorted(lemma_freqs, key = lambda x: -x[1])[0:N]
+    top_n_lemma = [i[0] for i in top5_lemma]
+    lemma_counts = [i[1] for i in top5_lemma]
+    
+    # Using Stem
+    stem_vectorizer = CountVectorizer()
+    stemmed_article = ' '.join(wd for wd in stemmed_tokens)
+    # performe a count-based vectorization of the document
+    article_stem_vect = stem_vectorizer.fit_transform([stemmed_article])
+    stem_freqs = [(word, article_stem_vect.getcol(idx).sum())
+                    for word, idx in stem_vectorizer.vocabulary_.items()]
+    top5_stem = sorted(stem_freqs, key = lambda x: -x[1])[0:N]
+    top_n_stem = [i[0] for i in top5_stem]
+    stem_counts = [i[1] for i in top5_stem]
+ 
+    return top_n_lemma, top_n_stem, lemma_counts, stem_counts
+
+
+
+
+                   
+df.to_pickle('10word_df.pkl')
         
 '''
 Optional to output the key words to a text file for examination   

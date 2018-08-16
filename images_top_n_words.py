@@ -53,9 +53,15 @@ def get_image_link( words, n_images=1,  ):
                    'print_urls':True}
     absolute_image_paths = response.download(arguments)
     
+    # Attempt to locate the image. If none, than return
+    #  failstate, and we will ignore this image
+    try:
+        print( list(absolute_image_paths.values())[0][0] )
+        downloaded_file = list(absolute_image_paths.values())[0][0]
+    except IndexError:
+        return None
+    
     # Remove the image we downloaded, since we don't need it
-    print( list(absolute_image_paths.values())[0][0] )
-    downloaded_file = list(absolute_image_paths.values())[0][0]
     try:
         os.remove( downloaded_file )
     except FileNotFoundError:

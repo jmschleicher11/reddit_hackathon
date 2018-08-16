@@ -56,8 +56,11 @@ def get_image_link( words, n_images=1,  ):
     # Remove the image we downloaded, since we don't need it
     print( list(absolute_image_paths.values())[0][0] )
     downloaded_file = list(absolute_image_paths.values())[0][0]
-    os.remove( downloaded_file )
-
+    try:
+        os.remove( downloaded_file )
+    except FileNotFoundError:
+        pass
+    
     # The link to the image
     img_path = ''
 
@@ -83,8 +86,11 @@ def get_image_link( words, n_images=1,  ):
         img_path = img_path[1:-3]
     print( img_path )
     
-    os.remove( log_dir+kw_str+'.txt' )
-
+    try:
+        os.remove( log_dir+kw_str+'.txt' )
+    except FileNotFoundError:
+        pass
+        
     return img_path
 
 

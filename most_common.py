@@ -20,7 +20,7 @@ def most_common(post, N=5, supress_output=False):
     and removes default stop words.
     """
     if ( not supress_output ):
-        print('preprocessing article text...')
+        print('Preprocessing article text...')
 
     # tokenizer, stops, and stemmer
     tokenizer = RegexpTokenizer(r'\w+')
@@ -45,6 +45,8 @@ def most_common(post, N=5, supress_output=False):
                     lemmatized_tokens.append(lemmatizer.lemmatize(token))
                     stemmed_tokens.append(stemmer.stem(token))
                     #cleaned_tokens.append(lemmatized_tokens)
+    
+    print('Lemmatizing and stemming...')
     
     # Extract top N words Using Lemma
     lemma_vectorizer = CountVectorizer()

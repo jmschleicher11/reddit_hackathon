@@ -89,9 +89,12 @@ def get_text( id_sub_dict ):
     # Use keys from sub dict as comment ids to 
     #  use to locate text
     text_dict = {}
-    for key in id_sub_dict.keys():
-        comment = _reddit.comment( id=key )
-        text_dict[ key ] = comment.body
+    try:
+        for key in id_sub_dict.keys():
+            comment = _reddit.comment( id=key )
+            text_dict[ key ] = comment.body
+    except praw.exceptions.PRAWException:
+        text_dict[key] = ''
 
     return text_dict
 

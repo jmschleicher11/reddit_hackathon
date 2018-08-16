@@ -166,9 +166,8 @@ def update_post_pickle_with_df( inp_df, filename='post_data.pkl' ):
 
     # If new posts, add and write new file
     
-###########UNCOMMENT WHEN ACTUALLY IMPLEMENTING, NOT TESTING
-    #out_df = inp_df[ new_posts ].append( old_df, ignore_index=True )
-    #out_df.to_pickle( filename )
+    out_df = inp_df[ new_posts ].append( old_df, ignore_index=True )
+    out_df.to_pickle( filename )
     
 # Gets only the most recent n_submission files
 def get_recent( n_submissions=5 ):

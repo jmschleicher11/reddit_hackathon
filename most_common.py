@@ -13,19 +13,14 @@ from nltk.stem.snowball import SnowballStemmer
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 
-#file_dir = '/home/driebel/Dropbox/Insight/hackathon/reddit_hackathon/'
-reddit_file = 'sample_comments_df_1000.pkl'
-#reddit_df = pd.read_pickle(file_dir+reddit_file)
-df = pd.read_pickle(reddit_file)
-df = df[df['text'] != '[removed]']
-df = df[df['text'] != '[deleted]']
 
-def most_common(post, N=5):
+def most_common(post, N=5, supress_output=False):
     """
     Simple preprocessing pipeline which uses RegExp, sets basic token requirements,
     and removes default stop words.
     """
-    print('preprocessing article text...')
+    if ( not supress_output ):
+        print('preprocessing article text...')
 
     # tokenizer, stops, and stemmer
     tokenizer = RegexpTokenizer(r'\w+')
@@ -38,12 +33,8 @@ def most_common(post, N=5):
             
     lemmatizer = WordNetLemmatizer()
     stemmer = SnowballStemmer('english')
-    #df['top_n_lemma'] = ''
-    #df['top_n_stem'] = ''
-    #df['lemma_counts'] = ''
-    #df['stem_counts'] = ''
-    # process articles
 
+    # process articles
     stemmed_tokens = []
     lemmatized_tokens = []
     tokens = tokenizer.tokenize(post.lower())
@@ -75,15 +66,13 @@ def most_common(post, N=5):
     top5_stem = sorted(stem_freqs, key = lambda x: -x[1])[0:N]
     top_n_stem = [i[0] for i in top5_stem]
     stem_counts = [i[1] for i in top5_stem]
- 
+
     return top_n_lemma, top_n_stem, lemma_counts, stem_counts
 
 
 
 
-                   
-df.to_pickle('10word_df.pkl')
-        
+                           
 '''
 Optional to output the key words to a text file for examination   
 

@@ -67,6 +67,7 @@ for submission in gtd._subreddit.stream.submissions():
                         post_link=out_df['url'].values[0], 
                         image_link=image_link, 
                         title=submission.title,
+                        words=lemma_w,
                        )
             
             print('Post complete! Updating database...')

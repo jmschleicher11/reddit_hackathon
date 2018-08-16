@@ -13,7 +13,9 @@ import praw
 # Provide post link, image link, and title for bot
 def post_bot(post_link=r'http:\\\\www.some.reddit.url', 
              image_link=r'http:\\\\www.google.image.link', 
-             title='bot test'):
+             title='bot test',
+             words=None,
+            ):
 
     with open('reddit_bot_configuration.dat') as f:
         bot_config = f.read()
@@ -32,6 +34,11 @@ def post_bot(post_link=r'http:\\\\www.some.reddit.url',
     body_text = "Hi!  I'm a friendly bot!  There's a cool DepthHub post at {}. \
     I think I found a really good related image!  \
     Sorry if I'm a little bit racist!".format(post_link)
+    
+    if ( words != None ):
+        body_text = body_text + '\n\nThis image was found using the words: '
+        for word in words:
+            body_text = body_text + word + ', '
     
     initial_post = subreddit.submit(title = title, url = image_link)
     _ = initial_post.reply(body_text)

@@ -41,7 +41,7 @@ def get_url( limit = 10 ):
     return original_post_urls
 
 # Get the subreddit from each of the posts
-def get_subreddit( original_post_urls ):
+def get_subreddit( original_post_urls, return_url=True ):
 
     # Set up client if not already
     if ( not _initiated ):
@@ -50,6 +50,7 @@ def get_subreddit( original_post_urls ):
     # Id dict uses the comment id as key, and contains subreddit
     pattern  = r'[/ ?]'
     id_dict  = {}
+    ur_dict  = {}
     
     for i in original_post_urls:
 
@@ -71,11 +72,11 @@ def get_subreddit( original_post_urls ):
             for token in tokens:
                 if token in comment_ids:
                     id_dict[token] = subreddit
-                    
+                    ur_dict[token] = i
         except praw.exceptions.ClientException:
             pass
         
-    return id_dict
+    return id_dict, ur_dict
     
     
 # Extract the text of the post
@@ -95,8 +96,8 @@ def get_text( id_sub_dict ):
     return text_dict
 
 # Turn the text and subreddits in a data frame
-def gen_df( sub_dict, text_dict ):
-    out_df = pd.DataFrame( columns=['comment_id','subreddit','text'] )
+def gen_df( sub_dict, text_dict, url_dict ):
+    out_df = pd.DataFrame( columns=['comment_id','url','subreddit','text'] )
 
     key_list = list( sub_dict.keys() )
 
@@ -105,6 +106,7 @@ def gen_df( sub_dict, text_dict ):
         out_df = out_df.append( 
             {
                 'comment_id':s_key,
+                'url':url_dict[s_key],
                 'subreddit':sub_dict[s_key],
                 'text':text_dict[s_key],
             }, ignore_index=True )
@@ -118,15 +120,6 @@ def write_df( filename, out_df ):
         pkl.dump( out_df, f )
     
     
-# Gets only the most recent n_submission files
-def get_recent( n_submissions=5 ):
-    
-    # Do all the stuff
-    _initiate_client()
-    urls = get_url( n_submissions )
-    sub_dict = get_subreddit(urls)
-    txt_dict = get_text( sub_dict )
-    return gen_df( sub_dict, txt_dict )
     
     
 # Get the top n_sub posts, check if in dataframe,
@@ -153,7 +146,17 @@ def update_post_file( filename, n_submissions=5 ):
     out_df = recent_df[ new_posts ].append( old_df, ignore_index=True )
     out_df.to_pickle( filename )
     
+# Gets only the most recent n_submission files
+def get_recent( n_submissions=5 ):
     
+    # Do all the stuff
+    _initiate_client()
+    urls = get_url( n_submissions )
+    sub_dict, url_dict = get_subreddit(urls)
+    txt_dict = get_text( sub_dict )
+    return gen_df( sub_dict, txt_dict, url_dict )
+
+
 def main():
     
     # Read and groom the input
@@ -170,9 +173,9 @@ def main():
     _initiate_client()
     urls = get_url( n_submissions )
     print('Exctracting data...')
-    sub_dict = get_subreddit(urls)
+    sub_dict, url_dict = get_subreddit(urls)
     txt_dict = get_text( sub_dict )
-    out_df   = gen_df( sub_dict, txt_dict )
+    out_df   = gen_df( sub_dict, txt_dict, url_dict )
     
     # Do the writing
     write_df( output_file, out_df )

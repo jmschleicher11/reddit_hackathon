@@ -45,43 +45,46 @@ for submission in gtd._subreddit.stream.submissions():
 
         # If the text is present, can move on to analysis
         if ( not out_df.empty ):
+            if ( len( out_df['text'].values[0] ) > 30 ):
             
-            print('Read text, processing:')
-            
-            #######################
-            ######Do stuff here####
-            #######################
-            
-            
-            # Do the processing and get the lemmatized words
-            lemma_w, stem_w, lemma_n, stem_n = mc.most_common( out_df['text'].values[0] )
-                        
-            print('Locating image...')
-            # Get the image link using gogle images download
-            image_link = itw.get_image_link( lemma_w )
-            
-            print('Image found, posting...')
-            
-            # Run the post bot
-            pb.post_bot(
-                        post_link=out_df['url'].values[0], 
-                        image_link=image_link, 
-                        title=submission.title,
-                        words=lemma_w,
-                       )
-            
-            print('Post complete! Updating database...')
-            #######################
-            #######################
-            #######################
-            
-            # Add to dataframe pkl
-            gtd.update_post_pickle_with_df( out_df, filename=file_name )
-            
-            print('Done!\n\n')
+                print('Read text, processing:')
+
+                #######################
+                ######Do stuff here####
+                #######################
+
+
+                # Do the processing and get the lemmatized words
+                lemma_w, stem_w, lemma_n, stem_n = mc.most_common( out_df['text'].values[0] )
+
+                print('Locating image...')
+                # Get the image link using gogle images download
+                image_link = itw.get_image_link( lemma_w )
+
+                print('Image found, posting...')
+
+                # Run the post bot
+                pb.post_bot(
+                            post_link=out_df['url'].values[0], 
+                            image_link=image_link, 
+                            title=submission.title,
+                            words=lemma_w,
+                           )
+
+                print('Post complete! Updating database...')
+                #######################
+                #######################
+                #######################
+
+                # Add to dataframe pkl
+                gtd.update_post_pickle_with_df( out_df, filename=file_name )
+
+                print('Done!\n\n')
+                time.sleep(59)
+            else:
+                print('No text found, aborting\n\n')
         else:
             print('No text found, aborting\n\n')
-        time.sleep(60)
     else:
         print('Comment id %s already present, ignoring\n\n'%comment_id)
-        
+    time.sleep(1)

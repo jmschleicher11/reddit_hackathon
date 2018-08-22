@@ -31,6 +31,8 @@ for submission in gtd._subreddit.stream.submissions():
         comment_id = list(sub_dict.keys())[0]
     except IndexError:
         comment_id = None
+    except AttributeError: # Occurs when sub dict None
+        comment_id = None
     if ( (comment_id not in old_ids) and
          (sub_dict != None) ):
         

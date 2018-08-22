@@ -58,7 +58,7 @@ def get_subreddit( original_post_urls, return_url=True ):
             tokens = re.split(pattern,i) # Break the url by slashes into elements
             
             # subreddits are of the form r/askscience, for example
-            subreddit_index = tokens.index('r') + 1
+            subreddit_index = tokens.index('r') + 1 # May get value error if not in list
             subreddit = tokens[ subreddit_index ]
 
             comment_ids = []
@@ -75,6 +75,8 @@ def get_subreddit( original_post_urls, return_url=True ):
                     ur_dict[token] = i
         except praw.exceptions.ClientException:
             pass
+        except ValueError:
+            return None, None
         
     return id_dict, ur_dict
     
